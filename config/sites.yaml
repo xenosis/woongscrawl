@@ -1,0 +1,31 @@
+sites:
+  - name: "비트가온 게시판"
+    url: "https://bitgaon-k.goegm.kr/bitgaon-k/na/ntt/selectNttList.do?mi=2277&bbsId=2192"
+    # 게시글 행 선택자
+    row_selector: "table tbody tr"
+    # 제목 선택자 (행 기준 상대 경로)
+    title_selector: "a.nttInfoBtn"
+    # 게시글 고유 ID를 가져올 data 속성명 (없으면 id_selector 사용)
+    id_data_attr: "data-id"
+    # 게시글 번호 선택자 (data 속성 없을 때 fallback)
+    id_selector: "td:nth-child(1)"
+    # 날짜 선택자 (행 기준 상대 경로)
+    date_selector: "td:nth-child(4)"
+    # 게시판 base URL (게시글 링크 조합용, 없으면 null)
+    base_url: "https://bitgaon-k.goegm.kr/bitgaon-k/na/ntt/selectNttInfo.do"
+    # 링크 파라미터 추출을 위한 패턴 (data-id와 조합)
+    link_params:
+      mi: "2277"
+      bbsId: "2192"
+    enabled: true
+
+  # 다른 사이트 추가 예시
+  # - name: "다른 공지사항"
+  #   url: "https://example.go.kr/board/list.do"
+  #   row_selector: "ul.notice li"
+  #   title_selector: "a.title"
+  #   id_selector: "span.num"
+  #   date_selector: "span.date"
+  #   base_url: null
+  #   link_params: {}
+  #   enabled: false

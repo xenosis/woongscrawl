@@ -1,0 +1,45 @@
+name: 게시판 크롤러
+
+on:
+  schedule:
+    # 매 10분마다 실행 (GitHub Actions 최소 단위)
+    # cron 표현식: UTC 기준. 한국 시간(KST) = UTC+9
+    # 실제로는 GitHub 서버 부하에 따라 1~5분 지연될 수 있음
+    - cron: "*/10 * * * *"
+  # 수동 실행 버튼 (테스트용)
+  workflow_dispatch:
+
+jobs:
+  crawl:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 코드 체크아웃
+        uses: actions/checkout@v4
+
+      # seen_posts.json을 캐시로 유지 (runs 간 상태 보존)
+      - name: 상태 파일 캐시 복원
+        uses: actions/cache@v4
+        with:
+          path: data/seen_posts.json
+          # 캐시 키에 날짜 포함 → 매일 갱신되어 만료 방지
+          key: seen-posts-${{ runner.os }}-${{ hashFiles('data/seen_posts.json') }}
+          restore-keys: |
+            seen-posts-${{ runner.os }}-
+
+      - name: Python 설치
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: 의존성 설치
+        run: pip install -r requirements.txt
+
+      - name: 크롤러 실행
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python main.py
+
+      # 상태 파일이 바뀌었으면 캐시 저장 (자동으로 처리됨)
