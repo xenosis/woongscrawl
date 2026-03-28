@@ -1,4 +1,7 @@
+import sys
 import yaml
+from dotenv import load_dotenv
+load_dotenv()
 from pathlib import Path
 from src.crawler import fetch_posts
 from src.store import load_seen_ids, save_seen_ids, is_initialized
@@ -8,7 +11,7 @@ from src.notifier import send_new_posts
 CONFIG_FILE = Path(__file__).parent / "config" / "sites.yaml"
 
 
-def run():
+def run(test_mode: bool = False):
     with open(CONFIG_FILE, "r", encoding="utf-8") as f:
         config = yaml.safe_load(f)
 
@@ -24,6 +27,12 @@ def run():
             continue
 
         print(f"[{site['name']}] 게시글 {len(current_posts)}개 수집")
+
+        # 테스트 모드: 첫 번째 글을 강제 발송 (seen_posts.json 변경 없음)
+        if test_mode:
+            print(f"[{site['name']}] [테스트] 첫 번째 게시글로 알림 발송 테스트")
+            send_new_posts([current_posts[0]])
+            continue
 
         current_ids = {p.post_id for p in current_posts}
         seen_ids = load_seen_ids(site["name"])
@@ -50,4 +59,4 @@ def run():
 
 
 if __name__ == "__main__":
-    run()
+    run(test_mode="--test" in sys.argv)
