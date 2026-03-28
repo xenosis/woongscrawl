@@ -14,6 +14,8 @@ env:
 jobs:
   crawl:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # 하트비트 커밋을 위한 쓰기 권한
 
     steps:
       - name: 코드 체크아웃
@@ -45,3 +47,15 @@ jobs:
         run: python main.py
 
       # 상태 파일이 바뀌었으면 캐시 저장 (자동으로 처리됨)
+
+      - name: 월간 하트비트 커밋 (레포 60일 비활성 방지)
+        run: |
+          DAY=$(date +%d)
+          if [ "$DAY" = "01" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            echo "$(date -u '+%Y-%m-%d %H:%M UTC')" > data/heartbeat.txt
+            git add data/heartbeat.txt
+            git commit -m "chore: 월간 하트비트 (자동 커밋)"
+            git push
+          fi
