@@ -2,9 +2,8 @@ name: 게시판 크롤러
 
 on:
   schedule:
-    # 매 1시간마다 실행
-    # cron 표현식: UTC 기준. 한국 시간(KST) = UTC+9
-    - cron: "0 * * * *"
+    # 매일 한국 시간 오전 11시 실행 (UTC 02:00)
+    - cron: "0 2 * * *"
   # 수동 실행 버튼 (테스트용)
   workflow_dispatch:
 
