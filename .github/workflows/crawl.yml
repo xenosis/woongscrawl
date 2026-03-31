@@ -21,16 +21,6 @@ jobs:
       - name: 코드 체크아웃
         uses: actions/checkout@v4
 
-      # seen_posts.json을 캐시로 유지 (runs 간 상태 보존)
-      - name: 상태 파일 캐시 복원
-        uses: actions/cache@v4
-        with:
-          path: data/seen_posts.json
-          # 캐시 키에 날짜 포함 → 매일 갱신되어 만료 방지
-          key: seen-posts-${{ runner.os }}-${{ hashFiles('data/seen_posts.json') }}
-          restore-keys: |
-            seen-posts-${{ runner.os }}-
-
       - name: Python 설치
         uses: actions/setup-python@v5
         with:
@@ -46,7 +36,13 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python main.py
 
-      # 상태 파일이 바뀌었으면 캐시 저장 (자동으로 처리됨)
+      - name: seen_posts.json 커밋 (상태 저장)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/seen_posts.json
+          git diff --cached --quiet || git commit -m "chore: seen_posts 상태 갱신"
+          git push
 
       - name: 월간 하트비트 커밋 (레포 60일 비활성 방지)
         run: |
