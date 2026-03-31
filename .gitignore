@@ -1,8 +1,6 @@
 # 환경변수 (절대 커밋하지 말 것)
 .env
 
-# 상태 파일 (GitHub Actions 캐시로 관리)
-data/seen_posts.json
 
 # Python
 __pycache__/
